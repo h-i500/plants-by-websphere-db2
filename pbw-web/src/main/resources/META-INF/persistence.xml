@@ -3,9 +3,6 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0"
 	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd">
 	<persistence-unit name="PBW">
-	  <!-- <jta-data-source>jdbc/PlantsByWebSphereMariaDBDataSource</jta-data-source> -->
-
-
 <!-- 		<jta-data-source>jdbc/PlantsByWebSphereMySQLDataSource</jta-data-source> -->
 		<jta-data-source>jdbc/PlantsByWebSphereDataSource</jta-data-source>
 
