@@ -4,16 +4,19 @@
 FROM maven:3.8.5-openjdk-8 AS builder
 WORKDIR /usr/src/app
 
-# プロジェクト全体をコピーする（マルチモジュールの全ディレクトリも含む）
+# プロジェクト全体をコピーする
 COPY . .
 
-# 1. まず、pbw-lib をビルドしてローカルリポジトリにインストールする
-RUN cd plants-by-websphere-liberty-db2/pbw-lib && mvn clean install -DskipTests
+# ※ 以下の行は、ビルド前にディレクトリ構成を確認するための一例です（必要に応じて削除）
+RUN ls -l /usr/src/app
 
-# 2. 必要に応じて依存関係をダウンロード（※ここで pbw-lib はすでにローカルにあるので依存解決できる）
+# pbw-lib を先にビルドしてローカルリポジトリにインストールする（パス修正）
+RUN cd pbw-lib && mvn clean install -DskipTests
+
+# 依存関係のダウンロード（go-offline）
 RUN mvn dependency:go-offline
 
-# 3. pbw-web を含む全体のクリーンビルド＆パッケージ作成
+# pbw-web などを含む全体のパッケージ作成
 RUN mvn clean package -DskipTests
 
 ##########################################
