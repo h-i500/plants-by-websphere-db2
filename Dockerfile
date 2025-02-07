@@ -1,19 +1,20 @@
 ##########################################
-# Stage 1: Builder - Maven でアプリケーションをビルド
+# Stage 1: Builder - Maven でアプリケーションをビルドする
 ##########################################
 FROM maven:3.8.5-openjdk-8 AS builder
 WORKDIR /usr/src/app
 
-# 依存関係解決のためにまずpom.xmlをコピー（キャッシュ対策）
-COPY pom.xml .
+# プロジェクト全体をコピーする（マルチモジュールの全ディレクトリも含む）
+COPY . .
+
+# 依存関係のダウンロード（必要に応じてキャッシュ対策）
 RUN mvn dependency:go-offline
 
-# ソースコードをコピーし、クリーンビルド
-COPY src/ ./src/
+# クリーンビルド＆パッケージ作成（子モジュールも含む）
 RUN mvn clean package
 
 ##########################################
-# Stage 2: Runtime - Liberty イメージに成果物と設定を配置
+# Stage 2: Runtime - Liberty イメージに成果物と設定を配置する
 ##########################################
 FROM websphere-liberty:kernel
 
@@ -30,11 +31,11 @@ USER root
 RUN chown 1001:0 /config/server.xml
 USER 1001
 
-# Liberty の設定スクリプトを実行して設定を反映
+# Liberty の設定を反映
 RUN configure.sh
 
 # --- ビルド成果物 (EAR) の配置 ---
-# builder ステージで生成されたEARを最終イメージにコピー
+# Stage 1 で生成された EAR をコピー（パスは実際の生成物に合わせて調整してください）
 COPY --from=builder /usr/src/app/target/plants-by-websphere-jee6-mysql.ear /opt/ibm/wlp/usr/servers/defaultServer/apps
 
-# （必要に応じてEXPOSEやCMDなどを追加）
+# 必要に応じて EXPOSE や CMD などを追加
