@@ -10,8 +10,8 @@ COPY . .
 # 依存関係のダウンロード（必要に応じてキャッシュ対策）
 RUN mvn dependency:go-offline
 
-# クリーンビルド＆パッケージ作成（子モジュールも含む）
-RUN mvn clean package
+# クリーンビルド＆インストール（各モジュールの成果物がローカルリポジトリに登録される）
+RUN mvn clean install -DskipTests
 
 ##########################################
 # Stage 2: Runtime - Liberty イメージに成果物と設定を配置する
@@ -35,7 +35,7 @@ USER 1001
 RUN configure.sh
 
 # --- ビルド成果物 (EAR) の配置 ---
-# Stage 1 で生成された EAR をコピー（パスは実際の生成物に合わせて調整してください）
+# ※ 生成された EAR のパスはプロジェクト構成に合わせて調整してください
 COPY --from=builder /usr/src/app/target/plants-by-websphere-jee6-mysql.ear /opt/ibm/wlp/usr/servers/defaultServer/apps
 
 # 必要に応じて EXPOSE や CMD などを追加
