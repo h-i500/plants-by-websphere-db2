@@ -4,20 +4,14 @@
 FROM maven:3.8.5-openjdk-8 AS builder
 WORKDIR /usr/src/app
 
-# プロジェクト全体をコピーする
+# プロジェクト全体（マルチモジュール全体）をコピーする
 COPY . .
 
-# ※ 以下の行は、ビルド前にディレクトリ構成を確認するための一例です（必要に応じて削除）
-RUN ls -l /usr/src/app
-
-# pbw-lib を先にビルドしてローカルリポジトリにインストールする（パス修正）
-RUN cd pbw-lib && mvn clean install -DskipTests
-
-# 依存関係のダウンロード（go-offline）
+# 依存関係のダウンロード（必要に応じてキャッシュ対策）
 RUN mvn dependency:go-offline
 
-# pbw-web などを含む全体のパッケージ作成
-RUN mvn clean package -DskipTests
+# ルートの pom.xml から全モジュールをビルド＆インストール
+RUN mvn clean install -DskipTests
 
 ##########################################
 # Stage 2: Runtime - Liberty イメージに成果物と設定を配置する
