@@ -22,6 +22,13 @@ USER root
 RUN chown 1001:0 /opt/ibm/wlp/usr/shared/resources/Db2/*.jar
 USER 1001
 
+# --- JDBC ドライバ (MySQL) の配置 ---
+# RUN mkdir -p /opt/ibm/wlp/usr/shared/resources/mysql
+# COPY wlp/usr/shared/resources/mysql/mysql-connector-java-5.1.38.jar /opt/ibm/wlp/usr/shared/resources/mysql/
+# USER root
+# RUN chown 1001:0 /opt/ibm/wlp/usr/shared/resources/mysql/*.jar
+# USER 1001
+
 # --- サーバ設定 (server.xml) の配置 ---
 COPY wlp/config/server.xml /config
 USER root
