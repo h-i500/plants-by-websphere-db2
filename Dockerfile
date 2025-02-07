@@ -7,10 +7,7 @@ WORKDIR /usr/src/app
 # プロジェクト全体（マルチモジュール全体）をコピーする
 COPY . .
 
-# 依存関係のダウンロード（必要に応じてキャッシュ対策）
-RUN mvn dependency:go-offline
-
-# ルートの pom.xml から全モジュールをビルド＆インストール
+# ルートの pom.xml から全モジュールをクリーンビルド＆インストール
 RUN mvn clean install -DskipTests
 
 ##########################################
