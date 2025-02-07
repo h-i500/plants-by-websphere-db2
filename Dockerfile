@@ -7,11 +7,14 @@ WORKDIR /usr/src/app
 # プロジェクト全体をコピーする（マルチモジュールの全ディレクトリも含む）
 COPY . .
 
-# 依存関係のダウンロード（必要に応じてキャッシュ対策）
+# 1. まず、pbw-lib をビルドしてローカルリポジトリにインストールする
+RUN cd plants-by-websphere-liberty-db2/pbw-lib && mvn clean install -DskipTests
+
+# 2. 必要に応じて依存関係をダウンロード（※ここで pbw-lib はすでにローカルにあるので依存解決できる）
 RUN mvn dependency:go-offline
 
-# クリーンビルド＆インストール（各モジュールの成果物がローカルリポジトリに登録される）
-RUN mvn clean install -DskipTests
+# 3. pbw-web を含む全体のクリーンビルド＆パッケージ作成
+RUN mvn clean package -DskipTests
 
 ##########################################
 # Stage 2: Runtime - Liberty イメージに成果物と設定を配置する
